@@ -32,7 +32,7 @@ app.get('/api/shorturl/:url_code', async (req, res) => {
   try {
     const short = await findShort(urlCode)
     const redirectUrl = short.longUrl
-    res.redirect('http://' + redirectUrl)
+    res.redirect(redirectUrl)
   } catch (e) {
     console.log('error:', e)
     res.json({error: 'No short URL found for the given input'})
@@ -49,12 +49,12 @@ app.post('/api/shorturl/new', (req, res) => {
   dns.lookup(hostname, async err => {
     if (err || !validProtocol) return res.json({ error: 'invalid URL' })
     try {
-      const long = await findLong(hostname)
+      const long = await findLong(url)
       if (long) return res.json(returnJSON(long))
 
       const last = await findLast()
       const newShortUrl = parseInt(last[0].shortUrl) + 1
-      const createdUrl = await createAndSaveUrl(hostname, newShortUrl)
+      const createdUrl = await createAndSaveUrl(url, newShortUrl)
 
       return res.json(returnJSON(createdUrl))
     } catch (e) {
